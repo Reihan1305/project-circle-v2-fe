@@ -1,19 +1,19 @@
-import {
-  Box,
-  Typography,
-  Button,
-  Avatar,
-  TextField,
-  IconButton,
-} from "@mui/material";
-import React, { useEffect } from "react";
-import ThreadCard from "../../components/common/ThreadCard";
-import { useAppDispatch, useAppSelector } from "../../store/store";
-import { getThreadsAsync } from "../../store/Asyncthunks/threadAsync";
-import usePostThread from "../../components/Sidebar/hook/useCreatePost";
+import { AddPhotoAlternateOutlined } from "@mui/icons-material";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
-import { AddPhotoAlternateOutlined } from "@mui/icons-material";
+import {
+  Avatar,
+  Box,
+  Button,
+  IconButton,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useEffect } from "react";
+import usePostThread from "../../components/Sidebar/hook/useCreatePost";
+import ThreadCard from "../../components/common/ThreadCard";
+import { getThreadsAsync } from "../../store/Asyncthunks/threadAsync";
+import { useAppDispatch, useAppSelector } from "../../store/store";
 
 const Home = () => {
   const dispatch = useAppDispatch();

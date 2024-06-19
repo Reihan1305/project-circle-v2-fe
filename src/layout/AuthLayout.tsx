@@ -1,10 +1,9 @@
-import { Box,Container } from '@mui/material'
+import { Box, Container } from '@mui/material'
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAppSelector } from '../store/store'
 
 const AuthLayout = () => {
   const isLogin = useAppSelector((state)=>state.auth.isLogin)
-  const token = localStorage.getItem("token")
   if ( isLogin ) {
     return(
       <Navigate to={"/"}/>

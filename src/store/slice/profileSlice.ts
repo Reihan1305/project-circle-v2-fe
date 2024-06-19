@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IAuthor, Ifollowing } from "../../types/app";
+import { createSlice } from "@reduxjs/toolkit";
+import { IAuthor } from "../../types/app";
 import { myProfileAsync } from "../Asyncthunks/profileAsync";
 
 const initialState: { profile: IAuthor } = {

@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { IAuthor } from "../../types/app";
+import { authCheckAsync, loginAsync, logoutAsync } from "../Asyncthunks/authAsync";
 import { IauthorState } from "../type/type";
-import { authCheckAsync,loginAsync, logoutAsync } from "../Asyncthunks/authAsync";
-import { IAuthor, IProfile } from "../../types/app";
 
 const storedToken = localStorage.getItem('token');
 const initialIsLogin = storedToken ? true : false;
