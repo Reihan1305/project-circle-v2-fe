@@ -1,26 +1,26 @@
-import { FC, useEffect, useState } from "react";
-import { IThread } from "../../../types/app";
-import { Avatar, Box, IconButton, Typography } from "@mui/material";
-import AuthorComponent from "./AuthorComponent";
-import ImageComponent from "./ImageComponent";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import CommentOutlinedIcon from "@mui/icons-material/CommentOutlined";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { Avatar, Box, IconButton, Typography } from "@mui/material";
+import { FC, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { API } from "../../../lib/api";
-import { useAppDispatch } from "../../../store/store";
-import usePostThread from "../../Sidebar/hook/useCreatePost";
+import { getThreadbyProfile } from "../../../store/Asyncthunks/getThreadProfileAsync";
 import { getThreadsAsync } from "../../../store/Asyncthunks/threadAsync";
-import { Link, useNavigate } from "react-router-dom";
-import ModalEditThread from "./modalEditThread";
+import { useAppDispatch } from "../../../store/store";
+import { IThread } from "../../../types/app";
+import usePostThread from "../../Sidebar/hook/useCreatePost";
+import AuthorComponent from "./AuthorComponent";
+import ImageComponent from "./ImageComponent";
 import ModalDeleteThread from "./modalDeleteThread";
+import ModalEditThread from "./modalEditThread";
 
 interface IProps {
   thread: IThread;
+  profileId:string
 }
 
-const ThreadCard: FC<IProps> = ({ thread }) => {
+const ThreadCard: FC<IProps> = ({ thread ,profileId}) => {
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const dispatch = useAppDispatch();
   const { profile } = usePostThread(thread.id);
@@ -51,6 +51,7 @@ const ThreadCard: FC<IProps> = ({ thread }) => {
       // Update like state based on API response
       setIsLiked(data.like);
       dispatch(getThreadsAsync());
+      dispatch(getThreadbyProfile(profileId))
     } catch (error) {
       console.log(error);
     }
@@ -64,7 +65,7 @@ const ThreadCard: FC<IProps> = ({ thread }) => {
         gap: 1,
         paddingX: 2,
         borderBottom: "1px solid rgba(255, 255, 255, 0.6)",
-        py: 1,
+        py: 1
       }}
     >
       <Avatar alt="ava" src={thread.author?.profile?.photoProfile} />
@@ -86,8 +87,9 @@ const ThreadCard: FC<IProps> = ({ thread }) => {
               createdAt={thread.createdAt}
             />
             <Box display={"flex"} gap={1}>
-              <ModalDeleteThread thread={thread} key={thread.id!} />
+              <ModalDeleteThread thread={thread} key={thread.id!}threadId={thread.id!} />
               <ModalEditThread
+              threadId={thread.id!}
                 profile={profile.profile}
                 thread={thread}
                 key={thread.id}
@@ -118,7 +120,7 @@ const ThreadCard: FC<IProps> = ({ thread }) => {
             )}
           </IconButton>
           <Typography>{thread.like?.length}</Typography>
-          <IconButton onClick={(e) => navigate(`thread/detail/${thread.id}`)}>
+          <IconButton onClick={() => navigate(`/thread/detail/${thread.id}`)}>
             <CommentOutlinedIcon />
           </IconButton>
           <Typography>{thread.reply?.length} reply</Typography>

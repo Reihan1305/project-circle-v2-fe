@@ -53,8 +53,25 @@ const AuthorComponent: React.FC<IProps> = ({ author, createdAt }) => {
         alignItems: "center",
       }}
     >
-      <Typography fontWeight={700}>{author?.fullname} </Typography>
-      <Typography variant="body2" sx={{ color: "rgba(255, 255, 255, 0.6)" }}>
+      <Typography
+        fontWeight={700}
+        sx={{
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {author?.fullname}{" "}
+      </Typography>
+      <Typography
+        variant="body2"
+        sx={{
+          color: "rgba(255, 255, 255, 0.6)",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}
+      >
         @{author?.profile?.username} • {timeAgo}
       </Typography>
     </Box>

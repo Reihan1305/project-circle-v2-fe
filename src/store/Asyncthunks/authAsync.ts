@@ -1,6 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { API,setAuthToken } from "../../lib/api";
 import { IAuthor } from "../../types/app";
+import { toast } from "react-toastify";
+
 
 interface Ilogin {
     email:string,
@@ -30,6 +32,12 @@ Iregister,
     }
 )
 
+const waitForToastToClose = (duration :number) => {
+    return new Promise((resolve) => {
+      setTimeout(resolve, duration);
+    });
+  };
+
 export const loginAsync = createAsyncThunk<
    string,
    Ilogin,
@@ -38,15 +46,38 @@ export const loginAsync = createAsyncThunk<
    try {
       console.log("props", props);
       const { data } = await API.post("/auth/login", props);
+      toast.success("Login Success", {
+          position: "top-center",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark"
+          
+        });
 
-      console.log("data", data.token);
-
-      const token = data.token;
-      setAuthToken(token);
-      localStorage.setItem("token", token);
+        await waitForToastToClose(1500);
+      
+        console.log("data", data.token);
+        const token = data.token;
+        setAuthToken(token);
+        localStorage.setItem("token", token);
       return token;
    } catch (error) {
+    toast.error("Login failed, Please check your inputs and try again.", {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
       return rejectWithValue("error");
+      
    }
 });
 
@@ -68,3 +99,46 @@ string,
         }
     }
 )
+
+export const logoutAsync = createAsyncThunk<
+  void, // Tidak mengembalikan data
+  void, // Tidak menerima parameter
+  { rejectValue: string } // Menangani penolakan dengan pesan kesalahan string
+>(
+  "auth/logout",
+  async (_, { rejectWithValue }) => {
+    try {
+      // Clear token dari localStorage
+      localStorage.removeItem("token");
+
+      // Clear token dari header API
+      setAuthToken('');
+
+      toast.success("Logout Successful", {
+        position: "top-center",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+
+      return;
+    } catch (error) {
+      toast.error("Logout failed, Please try again.", {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+
+      return rejectWithValue("error");
+    }
+  }
+);

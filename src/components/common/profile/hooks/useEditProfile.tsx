@@ -21,6 +21,7 @@ interface Iprops {
 
 const useEditProfile = ({ userId, initialData }: Iprops) => {
     const [open, setOpen] = React.useState(false);
+    const [edit,setEdit] = React.useState(false)
     const [updateForm, setUpdateForm] = React.useState<IUpdateForm>(initialData || {
         fullname: "",
         profile: {
@@ -37,6 +38,7 @@ const useEditProfile = ({ userId, initialData }: Iprops) => {
     const editProfile = async (e: React.MouseEvent) => {
         e.preventDefault();
         try {
+            setEdit(true)
             const formData = new FormData();
 
             formData.append("fullname", updateForm.fullname);
@@ -58,10 +60,12 @@ const useEditProfile = ({ userId, initialData }: Iprops) => {
             dispatch(getProfileAsync(userId));
         } catch (error) {
             console.log(error);
+        }finally{
+            setEdit(false)
         }
     }
 
-    return { updateForm, setUpdateForm, editProfile, open, setOpen, handleClose };
+    return { updateForm, setUpdateForm, editProfile, open, setOpen, handleClose,edit };
 }
 
 export default useEditProfile;

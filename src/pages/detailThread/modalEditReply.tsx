@@ -14,9 +14,12 @@ import { IReply } from "../../types/app";
 interface IProps {
   reply: IReply;
   profile: IAuthor;
+  replyId:string
 }
 
-const ModalEditReply: React.FC<IProps> = ({ reply, profile }) => {
+const ModalEditReply: React.FC<IProps> = ({ reply, profile,replyId }) => {
+  console.log(replyId);
+  
   const {
     open,
     handleOpen,
@@ -29,7 +32,48 @@ const ModalEditReply: React.FC<IProps> = ({ reply, profile }) => {
     threadId: reply.id!,
     initialState: { content: reply.content!, files: null },
     authorId: reply.author.id!,
+    mainThreadId:replyId
   });
+
+  let oldImage: string[] = [];
+
+  if (reply.images) {
+    oldImage = reply.images.map((img) => img.imageUrl!);
+  }
+
+  async function urlToFile(
+    url: string,
+    filename: string,
+    mimeType: string
+  ): Promise<File> {
+    const response = await fetch(url);
+    const data = await response.blob();
+    return new File([data], filename, { type: mimeType });
+  }
+
+  // Fungsi untuk mengubah array imageUrl menjadi FileList
+  async function imageUrlsToFileList(imageUrls: string[]): Promise<FileList> {
+    const files: File[] = await Promise.all(
+      imageUrls.map(async (url, index) => {
+        const mimeType = "image/jpeg"; // Sesuaikan MIME type sesuai kebutuhan
+        const filename = `image${index + 1}.jpg`; // Sesuaikan penamaan file sesuai kebutuhan
+        return await urlToFile(url, filename, mimeType);
+      })
+    );
+
+    // Gunakan DataTransfer untuk membuat FileList dari array File
+    const dataTransfer = new DataTransfer();
+    files.forEach((file) => dataTransfer.items.add(file));
+    return dataTransfer.files;
+  }
+  React.useEffect(() => {
+    imageUrlsToFileList(oldImage).then((fileList) => {
+      setThreadEdit((prevState) => ({
+        ...prevState,
+        files: fileList,
+      }));
+    });
+  }, []);
 
   // Function to handle file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

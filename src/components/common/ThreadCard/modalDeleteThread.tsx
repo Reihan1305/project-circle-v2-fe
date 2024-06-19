@@ -10,9 +10,10 @@ import { IThread } from "../../../types/app";
 
 interface IProps {
   thread: IThread;
+  threadId:string
 }
 
-const ModalDeleteThread: React.FC<IProps> = ({ thread }) => {
+const ModalDeleteThread: React.FC<IProps> = ({ thread,threadId }) => {
   const { open, deleteThread, handleClose, handleOpen } = useEditThread({
     threadId: thread.id!,
     authorId: "",
@@ -20,6 +21,7 @@ const ModalDeleteThread: React.FC<IProps> = ({ thread }) => {
       content: "",
       files: null,
     },
+    mainThreadId:threadId
   });
 
   return (

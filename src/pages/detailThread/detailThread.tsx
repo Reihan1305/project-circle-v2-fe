@@ -25,9 +25,12 @@ import { useAppDispatch, useAppSelector } from "../../store/store";
 import { getDetailThreadAsync } from "../../store/Asyncthunks/getDetailThreadAsync";
 import { API } from "../../lib/api";
 import { myProfileAsync } from "../../store/Asyncthunks/profileAsync";
-import ThreadCard from "../../components/common/ThreadCard";
 import UsePostReply from "./hooks/useReply";
 import ReplyCard from "./replyCard";
+import ControlPointIcon from "@mui/icons-material/ControlPoint";
+import { AddPhotoAlternateOutlined } from "@mui/icons-material";
+import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
+import { getThreadbyProfile } from "../../store/Asyncthunks/getThreadProfileAsync";
 
 function DetailThread() {
   const Params = useParams();
@@ -52,7 +55,10 @@ function DetailThread() {
     }
   }, [detailThread, profile]);
 
-  const { replyPost, setReplyPost, postReply, posting } = UsePostReply({ threadId });
+  const { replyPost, setReplyPost, postReply, posting } = UsePostReply({
+    threadId,
+    detailThreadId:detailThread.id!
+  });
 
   const navigate = useNavigate();
 
@@ -74,6 +80,67 @@ function DetailThread() {
     }
   };
 
+  const handleRemoveFile = (index: number) => {
+    if (replyPost.files) {
+      const newFiles: File[] = Array.from(replyPost.files);
+      newFiles.splice(index, 1);
+      setReplyPost({
+        ...replyPost,
+        files: newFiles.length > 0 ? arrayToFileList(newFiles) : null,
+      });
+    }
+  };
+
+  const arrayToFileList = (files: File[]): FileList => {
+    const dataTransfer = new DataTransfer();
+    files.forEach((file) => {
+      dataTransfer.items.add(file);
+    });
+    return dataTransfer.files;
+  };
+
+  const [timeAgo, setTimeAgo] = React.useState<string>("");
+
+  const handleClose = ()=>{
+    dispatch(getThreadbyProfile(profile.id!))
+    navigate("/")
+  }
+
+  const calculateTimeAgo = (dateString: string) => {
+    const createdAtDate = new Date(dateString);
+    const now = new Date();
+    const timeDifference = now.getTime() - createdAtDate.getTime();
+
+    const years = now.getFullYear() - createdAtDate.getFullYear();
+    const months = now.getMonth() - createdAtDate.getMonth();
+    const days = now.getDate() - createdAtDate.getDate();
+    const hours = now.getHours() - createdAtDate.getHours();
+
+    let result = "";
+    if (years > 0) {
+      result += `${years} y `;
+    }
+    if (months > 0) {
+      result += `${months} m `;
+    }
+    if (days > 0) {
+      result += `${days} d `;
+    }
+    if (hours > 0 || days > 0 || months > 0 || years > 0) {
+      result += `${hours} h`;
+    }
+
+    return result.trim();
+  };
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeAgo(calculateTimeAgo(detailThread.createdAt));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [detailThread.createdAt]);
+
   return (
     <Box
       sx={{
@@ -86,7 +153,7 @@ function DetailThread() {
         height: "100vh",
       }}
     >
-      <IconButton onClick={() => navigate("/")}>
+      <IconButton onClick={() => handleClose()}>
         <HighlightOffRoundedIcon fontSize={"large"} />
       </IconButton>
       {detailThread.images && detailThread.images.length > 0 ? (
@@ -147,7 +214,7 @@ function DetailThread() {
                 variant="body2"
                 sx={{ color: "rgba(255, 255, 255, 0.6)" }}
               >
-                @{detailThread.author?.profile?.username}
+                @{detailThread.author?.profile?.username} • {timeAgo}
               </Typography>
             </Box>
             <Typography marginTop={1}>{detailThread.content}</Typography>
@@ -183,79 +250,138 @@ function DetailThread() {
             borderBottom: "1px solid grey",
           }}
         >
-          <Avatar src={profile?.profile?.photoProfile} />
-          <TextField
+          <Box
             sx={{
-              width: "100%",
-              color: "white",
-              "& fieldset": { border: "none" },
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              alignItems: "center",
             }}
-            value={replyPost.content}
-            onChange={(e) =>
-              setReplyPost({ ...replyPost, content: e.target.value })
-            }
-            placeholder="Type Your Reply !"
-          />
-          <Box>
-            <label htmlFor="contained-button-file">
-              {!replyPost.files?.length ? (
-                <AddPhotoAlternateRoundedIcon
-                  fontSize="large"
-                  sx={{ color: "#04A51E" }}
-                />
-              ) : (
-                <Typography
-                  color={"#04A51E"}
-                  sx={{ display: "flex", justifyContent: "center" }}
-                  fontWeight={700}
-                  variant="h6"
-                >
-                  {replyPost.files.length}
-                  <ImageIcon sx={{ color: "#04A51E" }} />
-                </Typography>
-              )}
-            </label>
-            <input
-              accept="image/*"
-              id="contained-button-file"
-              multiple
-              type="file"
-              hidden
-              onChange={(e) =>
-                setReplyPost({ ...replyPost, files: e.target.files })
-              }
-            />
-          </Box>
-          <Button
-            sx={{
-              bgcolor: "#04A51E",
-              color: "white",
-              borderRadius: "20px",
-              fontWeight: 500,
-              px: 2,
-            }}
-            disabled={posting}
-            onClick={postReply}
           >
-            Post
-          </Button>
+            <Box
+              sx={{
+                display: "flex",
+                width: "100%",
+                gap: 2,
+                alignItems: "center",
+              }}
+            >
+              <Box marginLeft={1}>
+                <Avatar src={profile?.profile?.photoProfile} />
+              </Box>
+              <Box width={"100%"}>
+                <TextField
+                  sx={{
+                    width: "100%",
+                    color: "white",
+                    "& fieldset": { border: "none" },
+                  }}
+                  value={replyPost.content}
+                  onChange={(e) =>
+                    setReplyPost({ ...replyPost, content: e.target.value })
+                  }
+                  placeholder="Type Your Reply !"
+                />
+              </Box>
+              <Box>
+                <label htmlFor="contained-button-file">
+                  {!replyPost.files?.length ? (
+                    <AddPhotoAlternateOutlined
+                      fontSize="large"
+                      sx={{ color: "#04A51E" }}
+                    />
+                  ) : (
+                    <ControlPointIcon
+                      fontSize="large"
+                      sx={{ color: "#04A51E" }}
+                    />
+                  )}
+                </label>
+                <input
+                  accept="image/*"
+                  id="contained-button-file"
+                  multiple
+                  type="file"
+                  hidden
+                  onChange={(e) =>
+                    setReplyPost({ ...replyPost, files: e.target.files })
+                  }
+                />
+              </Box>
+              <Button
+                sx={{
+                  bgcolor: "#04A51E",
+                  color: "white",
+                  borderRadius: "20px",
+                  fontWeight: 500,
+                  px: 2,
+                }}
+                disabled={posting}
+                onClick={postReply}
+              >
+                Reply
+              </Button>
+            </Box>
+            {replyPost.files && (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  marginTop: 2,
+                  flexWrap: "wrap",
+                }}
+              >
+                {Array.from(replyPost.files).map((file: any, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      position: "relative",
+                      maxWidth: "100px",
+                      maxHeight: "100px",
+                    }}
+                  >
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={`Preview ${index}`}
+                      style={{
+                        maxWidth: "100%",
+                        maxHeight: "100%",
+                        borderRadius: "5px",
+                      }}
+                    />
+                    <IconButton
+                      onClick={() => handleRemoveFile(index)}
+                      sx={{ position: "absolute", top: 0, right: 0 }}
+                    >
+                      <CancelOutlinedIcon
+                        fontSize="small"
+                        sx={{ color: "#04A51E" }}
+                      />
+                    </IconButton>
+                  </Box>
+                ))}
+              </Box>
+            )}
+          </Box>
         </Box>
         <Box
           className="hide-scrollbar"
           sx={{
             overflowY: "auto",
-            maxHeight: "calc(100vh - 200px)", 
+            maxHeight: "calc(100vh - 200px)",
           }}
         >
           {detailThread.reply?.map((reply) => (
             <Box
               key={reply.id}
+              className="hide-scrollbar"
               sx={{
-                borderTop: "1px solid grey",
-                borderBottom: "1px solid grey",
+                // borderTop: "1px solid grey",
+                // borderBottom: "1px solid grey",
               }}
             >
-              <ReplyCard reply={reply} profile={profile}  />
+              <ReplyCard reply={reply} profile={profile} threadId={threadId!} mainReply={true}/>
             </Box>
           ))}
         </Box>

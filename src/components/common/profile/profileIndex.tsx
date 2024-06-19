@@ -3,42 +3,32 @@ import {
   Typography,
   Avatar,
   Button,
-  Tab,
-  ImageList,
-  ImageListItem,
 } from "@mui/material";
 import React,{ useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/store";
 import { getProfileAsync } from "../../../store/Asyncthunks/GetProfileAsync";
 import { useParams } from "react-router-dom";
 import { myProfileAsync } from "../../../store/Asyncthunks/profileAsync";
-import ThreadCard from "../ThreadCard";
 import { getThreadbyProfile } from "../../../store/Asyncthunks/getThreadProfileAsync";
 import ModalEdit from "./component/modalEdit";
-import TabContext from "@mui/lab/TabContext";
-import TabList from "@mui/lab/TabList";
-import TabPanel from "@mui/lab/TabPanel";
+import TabListProfile from "./component/tabList";
+
 
 const Profile = () => {
   const dispatch = useAppDispatch();
   const { profileId } = useParams<{ profileId: string }>();
 
   useEffect(() => {
-    dispatch(getProfileAsync(profileId));
-    dispatch(getThreadbyProfile(profileId));
+    dispatch(getProfileAsync(profileId!));
+    dispatch(getThreadbyProfile(profileId!));
     dispatch(myProfileAsync());
   }, [dispatch, profileId]);
 
   const profile = useAppSelector((state) => state.getProfile);
   const profileLogin = useAppSelector((state) => state.profile);
-  const threads = useAppSelector((state) => state.ThreadbyProfile.threads);
-
-  const [value, setValue] = React.useState("1");
-
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue);
-  };
-
+  
+  
+  
   return (
     <Box
       width={"100%"}
@@ -65,7 +55,7 @@ const Profile = () => {
               src={
                 profile.detailProfile.profile?.cover
                   ? profile.detailProfile.profile.cover
-                  : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNS7GXzIFW6w2yv0B9qVkHc8lPiYmUiuiEfnrprAVn0A&s"
+                  : "../../../public/defaultCover.png"
               }
               alt="Cover"
             />
@@ -131,117 +121,7 @@ const Profile = () => {
           </Box>
         </Box>
       </Box>
-      <Box sx={{ width: "100%", typography: "body1" }}>
-        <TabContext value={value}>
-          <Box
-            sx={{
-              borderBottom: "3px solid #04A51E",
-              borderColor: "ActiveCaption",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <TabList
-              onChange={handleChange}
-              variant="fullWidth"
-              sx={{ width: "100%" }}
-              textColor="primary"
-              TabIndicatorProps={{
-                style: {
-                  backgroundColor: "#04A51E",
-                },
-              }}
-            >
-              <Tab
-                label="All Post"
-                value="1"
-                sx={{
-                  padding: "20px",
-                  "&.Mui-selected": {
-                    color: "white",
-                  },
-                  borderBottom: "2px solid transparent",
-                }}
-              />
-              <Tab
-                label="Media"
-                value="2"
-                sx={{
-                  padding: "20px",
-                  "&.Mui-selected": {
-                    color: "white",
-                  },
-                  borderBottom: "2px solid transparent",
-                }}
-              />
-            </TabList>
-          </Box>
-          <TabPanel value="1">
-            {threads.length === 0 ? (
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: "100%",
-                  textAlign: "center",
-                }}
-              >
-                <Typography>No thread post yet</Typography>
-              </Box>
-            ) : (
-              threads.map((item) => <ThreadCard key={item.id} thread={item} />)
-            )}
-          </TabPanel>
-          <TabPanel value="2">
-            {threads.length === 0 ? (
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: "100%",
-                  textAlign: "center",
-                }}
-              >
-                <Typography>No media post yet</Typography>
-              </Box>
-            ) : (
-              threads.map((thread) =>
-                thread.images?.length === 0 ? (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: "100%",
-                      textAlign: "center",
-                    }}
-                  >
-                    <Typography>No thread post yet</Typography>
-                  </Box>
-                ) : (
-                  <ImageList sx={{ width: 500 }}>
-                    {thread.images!.map((obj) => (
-                      <ImageListItem key={obj.id}>
-                        <img
-                          srcSet={`${obj.imageUrl}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-                          src={`${obj.imageUrl}?w=164&h=164&fit=crop&auto=format`}
-                          alt={obj.id?.toString()}
-                          loading="lazy"
-                          style={{ height: "100%", overflow: "hidden" }}
-                        />
-                      </ImageListItem>
-                    ))}
-                  </ImageList>
-                )
-              )
-            )}
-          </TabPanel>
-        </TabContext>
-      </Box>
+      <TabListProfile authorId={profileId!} key={profileId}/>
     </Box>
   );
 };

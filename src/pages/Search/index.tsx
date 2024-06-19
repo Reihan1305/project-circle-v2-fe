@@ -30,7 +30,7 @@ const Search = () => {
   useEffect(() => {
     // Set followingIds after profile.following is loaded
     if (profile.following) {
-      setFollowingIds(profile.following.map((obj) => obj.followingId));
+      setFollowingIds(profile.following.map((obj) => obj.followerId));
     }
   }, []);
 
@@ -52,6 +52,8 @@ const Search = () => {
   const findFollow = (followingId: string) => {
     return followingIds.includes(followingId);
   };
+
+  
 
   const handleFollow = async (userId: string) => {
     try {
@@ -224,7 +226,7 @@ const Search = () => {
                   color: "white",
                 }}
               >
-                {findFollow(obj.id!) ? "Follow" : "unfollow"}
+                {findFollow(obj.id!) ? "Unfollow" : "Follow"}
               </Button>
             </Box>
           ))}

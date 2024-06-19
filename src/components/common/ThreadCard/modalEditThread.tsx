@@ -1,21 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import { Avatar, IconButton, TextField, Typography } from "@mui/material";
-import { AddPhotoAlternateOutlined} from "@mui/icons-material";
-import EditIcon from '@mui/icons-material/Edit';
+import { AddPhotoAlternateOutlined } from "@mui/icons-material";
+import EditIcon from "@mui/icons-material/Edit";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
-import ControlPointIcon from '@mui/icons-material/ControlPoint';
+import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import useEditThread from "./hooks/useEditThread";
 import { IAuthor, IThread } from "../../../types/app";
 
 interface IProps {
   thread: IThread;
   profile: IAuthor;
+  threadId:string
 }
 
-const ModalEditThread: React.FC<IProps> = ({ thread, profile }) => {
+const ModalEditThread: React.FC<IProps> = ({ thread, profile ,threadId}) => {
   const {
     open,
     handleOpen,
@@ -24,12 +25,52 @@ const ModalEditThread: React.FC<IProps> = ({ thread, profile }) => {
     threadEdit,
     setThreadEdit,
     editThread,
-    deleteThread,
   } = useEditThread({
     threadId: thread.id!,
     initialState: { content: thread.content!, files: null },
-    authorId:thread.author.id!
+    authorId: thread.author.id!,
+    mainThreadId:threadId
   });
+
+  let oldImage: string[] = [];
+
+  if (thread.images) {
+    oldImage = thread.images.map((img) => img.imageUrl!);
+  }
+
+  async function urlToFile(
+    url: string,
+    filename: string,
+    mimeType: string
+  ): Promise<File> {
+    const response = await fetch(url);
+    const data = await response.blob();
+    return new File([data], filename, { type: mimeType });
+  }
+
+  // Fungsi untuk mengubah array imageUrl menjadi FileList
+  async function imageUrlsToFileList(imageUrls: string[]): Promise<FileList> {
+    const files: File[] = await Promise.all(
+      imageUrls.map(async (url, index) => {
+        const mimeType = "image/jpeg"; // Sesuaikan MIME type sesuai kebutuhan
+        const filename = `image${index + 1}.jpg`; // Sesuaikan penamaan file sesuai kebutuhan
+        return await urlToFile(url, filename, mimeType);
+      })
+    );
+
+    // Gunakan DataTransfer untuk membuat FileList dari array File
+    const dataTransfer = new DataTransfer();
+    files.forEach((file) => dataTransfer.items.add(file));
+    return dataTransfer.files;
+  }
+  useEffect(() => {
+    imageUrlsToFileList(oldImage).then((fileList) => {
+      setThreadEdit((prevState) => ({
+        ...prevState,
+        files: fileList,
+      }));
+    });
+  }, []);
 
   // Function to handle file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,11 +109,8 @@ const ModalEditThread: React.FC<IProps> = ({ thread, profile }) => {
 
   return (
     <Box>
-      <IconButton
-        onClick={handleOpen}
-        sx={{padding:0}}
-      >
-        <EditIcon/>
+      <IconButton onClick={handleOpen} sx={{ padding: 0 }}>
+        <EditIcon />
       </IconButton>
       <Modal
         open={open}
@@ -94,12 +132,20 @@ const ModalEditThread: React.FC<IProps> = ({ thread, profile }) => {
             overflowY: "auto",
           }}
         >
-          <Box sx={{display:"flex",justifyContent:"space-between",alignItems:"center",paddingX:"10px",borderBottom:"1px solid grey"}}>
-            <Typography variant="h6" color={'#04A51E'} fontWeight={700}>
-                Edit Thread
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              paddingX: "10px",
+              borderBottom: "1px solid grey",
+            }}
+          >
+            <Typography variant="h6" color={"#04A51E"} fontWeight={700}>
+              Edit Thread
             </Typography>
-            <IconButton sx={{color:"#04A51E"}} onClick={handleClose}>
-              <CancelOutlinedIcon/>
+            <IconButton sx={{ color: "#04A51E" }} onClick={handleClose}>
+              <CancelOutlinedIcon />
             </IconButton>
           </Box>
           <Box
@@ -109,18 +155,16 @@ const ModalEditThread: React.FC<IProps> = ({ thread, profile }) => {
               gap: "10px",
               paddingX: 2,
               marginTop: 1,
-              borderBottom:"1px solid grey"
-              
+              borderBottom: "1px solid grey",
             }}
           >
-            <Avatar src={profile.profile?.photoProfile}  />
+            <Avatar src={profile.profile?.photoProfile} />
             <TextField
               sx={{
                 flex: 1,
                 background: "#1d1d1d",
                 color: "white",
                 "& fieldset": { border: "none" },
-                
               }}
               value={threadEdit.content}
               placeholder={thread.content}
@@ -129,18 +173,6 @@ const ModalEditThread: React.FC<IProps> = ({ thread, profile }) => {
               }
             />
             {/* Tombol edit disamping TextField */}
-            <Button
-              disabled={posting}
-              onClick={editThread}
-              sx={{
-                bgcolor: "#04A51E",
-                color: "white",
-                borderRadius: "15px",
-                fontWeight: 700,
-              }}
-            >
-              Edit
-            </Button>
           </Box>
           <Box
             sx={{
@@ -148,42 +180,10 @@ const ModalEditThread: React.FC<IProps> = ({ thread, profile }) => {
               alignItems: "center",
               gap: "10px",
               paddingX: 2,
-              marginTop: 2
+              marginTop: 2,
+              justifyContent: "space-between",
             }}
           >
-            {/* Menampilkan gambar lama jika ada */}
-            {threadEdit.oldImageUrl && (
-              <Box
-                sx={{
-                  position: "relative",
-                  maxWidth: "100px",
-                  maxHeight: "100px",
-                }}
-              >
-                <img
-                  src={threadEdit.oldImageUrl}
-                  alt="Old Thread Image"
-                  style={{
-                    maxWidth: "100%",
-                    maxHeight: "100%",
-                    borderRadius: "5px",
-                  }}
-                />
-                <IconButton
-                  onClick={() =>
-                    setThreadEdit({
-                      ...threadEdit,
-                      files: null,
-                      oldImageUrl: "",
-                    })
-                  }
-                  sx={{ position: "absolute", top: 0, right: 0 }}
-                >
-                  <CancelOutlinedIcon fontSize="small" sx={{ color: "#04A51E" }} />
-                </IconButton>
-              </Box>
-            )}
-
             {/* Menampilkan preview untuk file baru yang dipilih */}
             {threadEdit.files &&
               Array.from(threadEdit.files).map((file, index) => (
@@ -208,7 +208,10 @@ const ModalEditThread: React.FC<IProps> = ({ thread, profile }) => {
                     onClick={() => handleRemoveFile(index)}
                     sx={{ position: "absolute", top: 0, right: 0 }}
                   >
-                    <CancelOutlinedIcon fontSize="small" sx={{ color: "#04A51E" }} />
+                    <CancelOutlinedIcon
+                      fontSize="small"
+                      sx={{ color: "#04A51E" }}
+                    />
                   </IconButton>
                 </Box>
               ))}
@@ -245,6 +248,18 @@ const ModalEditThread: React.FC<IProps> = ({ thread, profile }) => {
                 onChange={handleFileChange}
               />
             </label>
+            <Button
+              disabled={posting}
+              onClick={editThread}
+              sx={{
+                bgcolor: "#04A51E",
+                color: "white",
+                borderRadius: "15px",
+                fontWeight: 700,
+              }}
+            >
+              Edit
+            </Button>
           </Box>
           <Box
             sx={{

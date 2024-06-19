@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../store/store";
 import { API } from "../../../lib/api";
+import { getThreadbyProfile } from "../../../store/Asyncthunks/getThreadProfileAsync";
 import { getThreadsAsync } from "../../../store/Asyncthunks/threadAsync";
+import { useAppDispatch, useAppSelector } from "../../../store/store";
 
 interface IThreadForm {
     content: string;
@@ -15,7 +15,6 @@ const usePostThread:any = () => {
     const handleClose = () => setOpen(false);
     const [threadPost, setThreadPost] = useState<IThreadForm>({ content: "", files: null });
     const dispatch = useAppDispatch();
-    const navigate = useNavigate();
     const [posting,setPosting] = useState(false)
     const profile = useAppSelector((state) => state.profile);
 
@@ -39,10 +38,10 @@ const usePostThread:any = () => {
             });
 
             dispatch(getThreadsAsync());
+            dispatch(getThreadbyProfile(profile.profile.id!))
             setThreadPost({ content: "", files: null }); 
             console.log(res);
-            handleClose()           
-            navigate("/");
+            handleClose()         
             setPosting(false)
         } catch (error) {
             console.error(error);

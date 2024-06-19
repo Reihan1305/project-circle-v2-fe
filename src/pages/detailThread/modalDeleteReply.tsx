@@ -10,9 +10,10 @@ import { IReply } from "../../types/app";
 
 interface IProps {
   reply: IReply;
+  threadId:string
 }
 
-const ModalDeleteReply: React.FC<IProps> = ({ reply }) => {
+const ModalDeleteReply: React.FC<IProps> = ({ reply,threadId }) => {
   const { open, deleteThread, handleClose, handleOpen } = useEditThread({
     threadId: reply.id!,
     authorId: "",
@@ -20,6 +21,7 @@ const ModalDeleteReply: React.FC<IProps> = ({ reply }) => {
       content: "",
       files: null,
     },
+    mainThreadId:threadId
   });
 
   return (

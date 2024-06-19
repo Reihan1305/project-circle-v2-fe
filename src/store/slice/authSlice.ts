@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IauthorState } from "../type/type";
-import { authCheckAsync,loginAsync } from "../Asyncthunks/authAsync";
+import { authCheckAsync,loginAsync, logoutAsync } from "../Asyncthunks/authAsync";
 import { IAuthor, IProfile } from "../../types/app";
 
 const storedToken = localStorage.getItem('token');
@@ -46,10 +46,16 @@ export const authSlice = createSlice({
          builder.addCase(authCheckAsync.pending,(_,action)=>{
             console.log(`pending ${action}`);
          })
-         
-     },
-     
-})
+         builder.addCase(logoutAsync.fulfilled, (state) => {
+            state.isLogin = false;
+            state.token = "";
+            state.profile = {} as IAuthor;
+          });
+          builder.addCase(logoutAsync.rejected, (_, action) => {
+            console.log(`rejected ${action}`);
+          });
+        },
+     })
 
 export const {LOGIN}= authSlice.actions
 export default authSlice.reducer;

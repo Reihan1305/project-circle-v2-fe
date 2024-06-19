@@ -1,33 +1,32 @@
 import React from "react";
 import { API } from "../../../../lib/api";
-import { useAppDispatch } from "../../../../store/store";
-import { getThreadsAsync } from "../../../../store/Asyncthunks/threadAsync";
 import { getDetailThreadAsync } from "../../../../store/Asyncthunks/getDetailThreadAsync";
 import { getThreadbyProfile } from "../../../../store/Asyncthunks/getThreadProfileAsync";
-import { useNavigate } from "react-router-dom";
+import { getThreadsAsync } from "../../../../store/Asyncthunks/threadAsync";
+import { useAppDispatch } from "../../../../store/store";
 
 interface IThreadForm {
   content: string;
   files: FileList | null;
-  oldImageUrl:string
+  oldImageUrl: string;
 }
 
 interface IProps {
   threadId: string;
+  mainThreadId: string;
   initialState: {
     content: string;
     files: FileList | null;
   };
-  authorId:string
+  authorId: string;
 }
 
-const useEditThread = ({ threadId, initialState ,authorId}: IProps) => {
-  const navigate = useNavigate()
+const useEditThread = ({ threadId, initialState, authorId, mainThreadId }: IProps) => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
-    setThreadEdit({ content: "", files: null, oldImageUrl: "" }); // Reset state ketika modal ditutup
+    setThreadEdit({ content: "", files: null, oldImageUrl: "" }); // Reset state when the modal is closed
   };
 
   const [posting, setPosting] = React.useState(false);
@@ -42,6 +41,8 @@ const useEditThread = ({ threadId, initialState ,authorId}: IProps) => {
     if (initialState.files && initialState.files.length > 0) {
       const imageUrl = URL.createObjectURL(initialState.files[0]);
       setThreadEdit((prev) => ({ ...prev, oldImageUrl: imageUrl }));
+    } else {
+      setThreadEdit((prev) => ({ ...prev, oldImageUrl: "" }));
     }
   }, [initialState.files]);
 
@@ -57,7 +58,7 @@ const useEditThread = ({ threadId, initialState ,authorId}: IProps) => {
           formData.append("image", file);
         });
       }
-      
+
       const res = await API.put(`/threads/${threadId}`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -65,13 +66,13 @@ const useEditThread = ({ threadId, initialState ,authorId}: IProps) => {
         },
       });
 
-
-      dispatch(getThreadbyProfile(authorId));
+      // Dispatch to fetch the main thread and the updated thread
       dispatch(getDetailThreadAsync(threadId));
       dispatch(getThreadsAsync());
-      setThreadEdit({ content: "", files: null, oldImageUrl: "" }); 
+        dispatch(getThreadbyProfile(authorId));
+        dispatch(getDetailThreadAsync(mainThreadId));
+      setThreadEdit({ content: "", files: null, oldImageUrl: "" });
       handleClose();
-      window.location.reload();
 
       console.log(res);
     } catch (error) {
@@ -80,7 +81,7 @@ const useEditThread = ({ threadId, initialState ,authorId}: IProps) => {
       setPosting(false);
     }
   };
-  
+
   const deleteThread = async (e: React.MouseEvent) => {
     e.preventDefault();
     try {
@@ -90,11 +91,11 @@ const useEditThread = ({ threadId, initialState ,authorId}: IProps) => {
         },
       });
 
-      dispatch(getThreadbyProfile(authorId));
-      dispatch(getDetailThreadAsync(threadId));
+      // Dispatch to fetch the main thread and other necessary data
       dispatch(getThreadsAsync());
+      dispatch(getDetailThreadAsync(mainThreadId));
+      dispatch(getThreadbyProfile(authorId));
       handleClose();
-      window.location.reload();
 
       console.log(res);
     } catch (error) {

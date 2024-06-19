@@ -13,6 +13,7 @@ import React from "react";
 import HighlightOffRoundedIcon from "@mui/icons-material/HighlightOffRounded";
 import useEditProfile from '../hooks/useEditProfile'; // Adjust the import path accordingly
 
+
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -43,7 +44,7 @@ const ModalEdit: React.FC<Iprops> = ({ userId, photoProfile, cover, fullname, us
     }
   };
 
-  const { updateForm, setUpdateForm, editProfile, open, setOpen, handleClose } = useEditProfile({ userId, initialData });
+  const { updateForm, setUpdateForm, editProfile, open, setOpen, handleClose,edit } = useEditProfile({ userId, initialData });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -125,7 +126,7 @@ const ModalEdit: React.FC<Iprops> = ({ userId, photoProfile, cover, fullname, us
                     style={{ borderRadius: "10px", cursor: "pointer" }}
                     width="100%"
                     height="150px"
-                    src={updateForm.profile.cover ? URL.createObjectURL(updateForm.profile.cover) : (cover || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNS7GXzIFW6w2yv0B9qVkHc8lPiYmUiuiEfnrprAVn0A&s")}
+                    src={updateForm.profile.cover ? URL.createObjectURL(updateForm.profile.cover) : (cover || "../../../public/defaultCover.png")}
                   />
                   <input
                     id="cover-input"
@@ -221,7 +222,7 @@ const ModalEdit: React.FC<Iprops> = ({ userId, photoProfile, cover, fullname, us
                 marginTop: "20px",
               }}
             >
-              <Button onClick={editProfile} sx={{ bgcolor: "#04A51E", color: "white", px: "20px", borderRadius: "20px" }}>
+              <Button disabled={edit} onClick={editProfile} sx={{ bgcolor: "#04A51E", color: "white", px: "20px", borderRadius: "20px" }}>
                 Save
               </Button>
             </Box>

@@ -9,22 +9,7 @@ const initialState: { profile: IAuthor } = {
 export const profileSlice = createSlice({
     name: "profile",
     initialState,
-    reducers: {
-        toggleFollow: (state, action: PayloadAction<string>) => {
-            const userId:string |undefined = action.payload;
-            const index = state.profile.following.findIndex(
-                (following) => following.followingId === userId
-            );
-
-            if (index > -1) {
-                // Unfollow pengguna
-                state.profile.following.splice(index, 1);
-            } else {
-                // Follow pengguna
-                state.profile.following.push({ followerId: state.profile.id!, followingId: userId });
-            }
-        },
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder.addCase(myProfileAsync.fulfilled, (state, action) => {
             state.profile = action.payload;
@@ -37,7 +22,5 @@ export const profileSlice = createSlice({
         });
     },
 });
-
-export const { toggleFollow } = profileSlice.actions;
 
 export default profileSlice.reducer;

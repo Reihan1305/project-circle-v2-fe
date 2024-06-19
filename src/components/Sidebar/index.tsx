@@ -1,9 +1,9 @@
-import { Box, Typography } from "@mui/material";
-import MenuItem from "./MenuItem";
-import { Link, useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../../store/store";
-import { authSlice } from "../../store/slice/authSlice";
+import { Box, Button, Typography } from "@mui/material";
 import { CiLogout } from "react-icons/ci";
+import { useNavigate } from "react-router-dom";
+import { logoutAsync } from "../../store/Asyncthunks/authAsync";
+import { useAppDispatch } from "../../store/store";
+import MenuItem from "./MenuItem";
 import CreatePost from "./createPost";
 
 const Sidebar = () => {
@@ -11,17 +11,11 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   const handleLogout =  () => {
-     // Clear localStorage
   localStorage.clear();
 
-  // Update Redux state
-  dispatch(authSlice.actions.LOGIN({ token: "", profile: {} }));
+  dispatch(logoutAsync());
 
-  // Reload page to ensure state and localStorage updates take effect
-  window.location.reload();
-
-  // Optional: Use navigate hook to navigate to login page
-  navigate('/auth/login');
+  navigate("/auth/login")
 };
 
   return (
@@ -44,24 +38,22 @@ const Sidebar = () => {
       <Box>
         <CreatePost />
       </Box>
-      <Link
-        to={"/auth/login"}
-        style={{ textDecoration: "none", color: "white", marginTop: "10px" }}
-        onClick={handleLogout}
-      >
-        <Box
+        <Button
           sx={{
+            padding:"0",
+            color:"white",
             display: "flex",
             alignItems: "center",
             gap: 1,
             marginTop: "auto",
             fontWeight: 500,
+            justifyContent:"start"
           }}
+          onClick={handleLogout}
         >
           <CiLogout />
-          <Typography sx={{}}>Logout</Typography>
-        </Box>
-      </Link>
+          <Typography textAlign={"start"}>Logout</Typography>
+        </Button>
     </Box>
   );
 };

@@ -40,7 +40,7 @@ const Profile = () => {
               src={
                 profile.profile?.cover
                   ? profile.profile?.cover
-                  : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNS7GXzIFW6w2yv0B9qVkHc8lPiYmUiuiEfnrprAVn0A&s"
+                  : "../../../public/defaultCover.png"
               }
             />
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
