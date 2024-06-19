@@ -19,9 +19,9 @@ const TabListProfile: React.FC<IProps> = ({ authorId }) => {
 
   const [value, setValue] = useState("1");
   const [imagesArray, setImagesArray] = useState<any[]>([]);
-  const [filterReply, setFilterReply] = useState<any[]>([]);
+  const [_, setFilterReply] = useState<any[]>([]);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+  const handleChange = ( newValue: string) => {
     setValue(newValue);
   };
 
@@ -60,7 +60,7 @@ const TabListProfile: React.FC<IProps> = ({ authorId }) => {
           }}
         >
           <TabList
-            onChange={handleChange}
+            onChange={()=>handleChange}
             variant="fullWidth"
             sx={{ width: "100%" }}
             textColor="primary"

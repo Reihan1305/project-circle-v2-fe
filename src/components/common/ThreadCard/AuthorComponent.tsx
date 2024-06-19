@@ -13,8 +13,7 @@ const AuthorComponent: React.FC<IProps> = ({ author, createdAt }) => {
   const calculateTimeAgo = (dateString: string) => {
     const createdAtDate = new Date(dateString);
     const now = new Date();
-    const timeDifference = now.getTime() - createdAtDate.getTime();
-
+    
     const years = now.getFullYear() - createdAtDate.getFullYear();
     const months = now.getMonth() - createdAtDate.getMonth();
     const days = now.getDate() - createdAtDate.getDate();
