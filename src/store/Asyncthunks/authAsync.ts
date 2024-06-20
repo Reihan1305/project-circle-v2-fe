@@ -101,19 +101,13 @@ string,
 )
 
 export const logoutAsync = createAsyncThunk<
-  void, // Tidak mengembalikan data
-  void, // Tidak menerima parameter
-  { rejectValue: string } // Menangani penolakan dengan pesan kesalahan string
+  void,
+  void, 
+  { rejectValue: string } 
 >(
   "auth/logout",
   async (_, { rejectWithValue }) => {
     try {
-      // Clear token dari localStorage
-      localStorage.removeItem("token");
-
-      // Clear token dari header API
-      setAuthToken('');
-
       toast.success("Logout Successful", {
         position: "top-center",
         autoClose: 1000,
@@ -123,6 +117,11 @@ export const logoutAsync = createAsyncThunk<
         draggable: true,
         progress: undefined,
         theme: "dark",
+        onClose:()=>{
+          localStorage.removeItem("token");
+
+      setAuthToken('');
+        }
       });
 
       return;

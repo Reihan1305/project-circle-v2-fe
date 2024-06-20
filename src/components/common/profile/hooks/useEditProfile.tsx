@@ -16,7 +16,7 @@ interface IUpdateForm {
 
 interface Iprops {
     userId: string
-    initialData?: IUpdateForm; // Optional prop for initial data
+    initialData?: IUpdateForm;
 }
 
 const useEditProfile = ({ userId, initialData }: Iprops) => {

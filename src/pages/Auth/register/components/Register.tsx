@@ -7,9 +7,7 @@ import { useEffect, useState } from "react";
 import { useRegisterFunction } from "../hooks/useRegister";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; 
-
 
 const Register = () => {
   const authState = useAppSelector((state) => state.auth);
@@ -27,7 +25,6 @@ const Register = () => {
   }, [authState]);
   return (
     <Box>
-      <ToastContainer/>
       <Box
         sx={{
           Width: "100vh",

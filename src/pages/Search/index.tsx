@@ -131,7 +131,8 @@ const Search = () => {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              height: "100vh",
+              height: "100%",
+              padding:"30px"
             }}
           >
             <Typography
@@ -154,7 +155,8 @@ const Search = () => {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              height: "100vh",
+              height: "100%",
+              padding:"30px"
             }}
           >
             <Typography variant="h6" color={"white"} sx={{ textAlign: "center" }}>

@@ -7,7 +7,6 @@ import { useLoginFunction } from "../hooks/useLogin";
 import { useEffect, useState } from "react";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
-import { ToastContainer } from "react-toastify";
 const Login = () => {
   const authState = useAppSelector((state) => state.auth);
 
@@ -24,7 +23,6 @@ const Login = () => {
   }, [authState]);
   return (
   <Box>
-    <ToastContainer/>
     <Box
       sx={{
         Width: "100vh",

@@ -11,8 +11,7 @@ import {
 } from "@mui/material";
 import React from "react";
 import HighlightOffRoundedIcon from "@mui/icons-material/HighlightOffRounded";
-import useEditProfile from '../hooks/useEditProfile'; // Adjust the import path accordingly
-
+import useEditProfile from "../hooks/useEditProfile"; // Adjust the import path accordingly
 
 const style = {
   position: "absolute" as "absolute",
@@ -33,7 +32,14 @@ interface Iprops {
   bio: string;
 }
 
-const ModalEdit: React.FC<Iprops> = ({ userId, photoProfile, cover, fullname, username, bio }) => {
+const ModalEdit: React.FC<Iprops> = ({
+  userId,
+  photoProfile,
+  cover,
+  fullname,
+  username,
+  bio,
+}) => {
   const initialData = {
     fullname,
     profile: {
@@ -41,28 +47,36 @@ const ModalEdit: React.FC<Iprops> = ({ userId, photoProfile, cover, fullname, us
       username,
       cover: null,
       photoProfile: null,
-    }
+    },
   };
 
-  const { updateForm, setUpdateForm, editProfile, open, setOpen, handleClose,edit } = useEditProfile({ userId, initialData });
+  const {
+    updateForm,
+    setUpdateForm,
+    editProfile,
+    open,
+    setOpen,
+    handleClose,
+    edit,
+  } = useEditProfile({ userId, initialData });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setUpdateForm(prev => ({
+    setUpdateForm((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, files } = e.target;
     if (files && files.length > 0) {
-      setUpdateForm(prev => ({
+      setUpdateForm((prev) => ({
         ...prev,
         profile: {
           ...prev.profile,
-          [name]: files[0]
-        }
+          [name]: files[0],
+        },
       }));
     }
   };
@@ -126,7 +140,11 @@ const ModalEdit: React.FC<Iprops> = ({ userId, photoProfile, cover, fullname, us
                     style={{ borderRadius: "10px", cursor: "pointer" }}
                     width="100%"
                     height="150px"
-                    src={updateForm.profile.cover ? URL.createObjectURL(updateForm.profile.cover) : (cover || "../../../public/defaultCover.png")}
+                    src={
+                      updateForm.profile.cover
+                        ? URL.createObjectURL(updateForm.profile.cover)
+                        : cover || "../../../defaultCover.png"
+                    }
                   />
                   <input
                     id="cover-input"
@@ -145,9 +163,13 @@ const ModalEdit: React.FC<Iprops> = ({ userId, photoProfile, cover, fullname, us
                         height: "80px",
                         top: "-30px",
                         left: "5px",
-                        cursor: "pointer"
+                        cursor: "pointer",
                       }}
-                      src={updateForm.profile.photoProfile ? URL.createObjectURL(updateForm.profile.photoProfile) : photoProfile}
+                      src={
+                        updateForm.profile.photoProfile
+                          ? URL.createObjectURL(updateForm.profile.photoProfile)
+                          : photoProfile
+                      }
                     />
                     <input
                       id="photoProfile-input"
@@ -178,13 +200,15 @@ const ModalEdit: React.FC<Iprops> = ({ userId, photoProfile, cover, fullname, us
                     label="Username"
                     name="username"
                     value={updateForm.profile.username}
-                    onChange={(e) => setUpdateForm(prev => ({
-                      ...prev,
-                      profile: {
-                        ...prev.profile,
-                        username: e.target.value
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setUpdateForm((prev) => ({
+                        ...prev,
+                        profile: {
+                          ...prev.profile,
+                          username: e.target.value,
+                        },
+                      }))
+                    }
                     sx={{ width: "100%" }}
                     inputProps={{
                       style: {
@@ -196,13 +220,15 @@ const ModalEdit: React.FC<Iprops> = ({ userId, photoProfile, cover, fullname, us
                     label="Bio"
                     name="bio"
                     value={updateForm.profile.bio}
-                    onChange={(e) => setUpdateForm(prev => ({
-                      ...prev,
-                      profile: {
-                        ...prev.profile,
-                        bio: e.target.value
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setUpdateForm((prev) => ({
+                        ...prev,
+                        profile: {
+                          ...prev.profile,
+                          bio: e.target.value,
+                        },
+                      }))
+                    }
                     sx={{ width: "100%" }}
                     inputProps={{
                       style: {
@@ -222,7 +248,16 @@ const ModalEdit: React.FC<Iprops> = ({ userId, photoProfile, cover, fullname, us
                 marginTop: "20px",
               }}
             >
-              <Button disabled={edit} onClick={editProfile} sx={{ bgcolor: "#04A51E", color: "white", px: "20px", borderRadius: "20px" }}>
+              <Button
+                disabled={edit}
+                onClick={editProfile}
+                sx={{
+                  bgcolor: "#04A51E",
+                  color: "white",
+                  px: "20px",
+                  borderRadius: "20px",
+                }}
+              >
                 Save
               </Button>
             </Box>

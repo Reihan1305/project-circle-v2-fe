@@ -21,7 +21,7 @@ const TabListProfile: React.FC<IProps> = ({ authorId }) => {
   const [imagesArray, setImagesArray] = useState<any[]>([]);
   const [_, setFilterReply] = useState<any[]>([]);
 
-  const handleChange = ( newValue: string) => {
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
 
@@ -60,7 +60,7 @@ const TabListProfile: React.FC<IProps> = ({ authorId }) => {
           }}
         >
           <TabList
-            onChange={()=>handleChange}
+            onChange={handleChange}
             variant="fullWidth"
             sx={{ width: "100%" }}
             textColor="primary"
@@ -96,7 +96,9 @@ const TabListProfile: React.FC<IProps> = ({ authorId }) => {
         </Box>
         <TabPanel value="1" sx={{ width: "100%", padding: 0 }}>
           {Array.isArray(threads) && threads.length > 0 ? (
-            threads.map((item) => <ThreadCard key={item.id} thread={item} profileId={authorId}/>)
+            threads.map((item) => (
+              <ThreadCard key={item.id} thread={item} profileId={authorId} />
+            ))
           ) : (
             <Box
               sx={{

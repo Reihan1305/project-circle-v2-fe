@@ -40,7 +40,7 @@ const Profile = () => {
               src={
                 profile.profile?.cover
                   ? profile.profile?.cover
-                  : "../../../public/defaultCover.png"
+                  : "../../../defaultCover.png"
               }
             />
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
